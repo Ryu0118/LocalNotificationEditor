@@ -16,7 +16,7 @@ public struct LocalNotificationList: View {
         List {
             ForEach(notificationRequests, id: \.identifier) { request in
                 HStack {
-                    VStack {
+                    VStack(alignment: .leading) {
                         if !request.content.title.isEmpty {
                             Text(request.content.title)
                                 .font(.title3.bold())
