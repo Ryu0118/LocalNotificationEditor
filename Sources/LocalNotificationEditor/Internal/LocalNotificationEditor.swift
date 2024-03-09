@@ -34,7 +34,7 @@ struct LocalNotificationEditor: View {
         !identifier.isEmpty && (!title.isEmpty || !subtitle.isEmpty || !bodyString.isEmpty)
     }
 
-    let userNotificationCenter: UNUserNotificationCenter
+    let userNotificationCenter: any UNUserNotificationCenterProtocol
     let mode: Mode
     let onSave: () -> Void
 
@@ -61,7 +61,7 @@ struct LocalNotificationEditor: View {
     }
 
     init(
-        userNotificationCenter: UNUserNotificationCenter,
+        userNotificationCenter: some UNUserNotificationCenterProtocol,
         mode: Mode,
         onSave: @escaping () -> Void
     ) {
@@ -236,7 +236,7 @@ struct LocalNotificationEditor: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        saveButtonTapped()
+                        Task { try await saveButtonTapped() }
                     }
                     .disabled(!isSaveButtonEnabled)
                 }
@@ -342,7 +342,7 @@ struct LocalNotificationEditor: View {
         }
     }
 
-    private func saveButtonTapped() {
+    private func saveButtonTapped() async throws {
         let request = UNNotificationRequest(
             identifier: identifier,
             content: createNotificationContent(),
@@ -350,10 +350,10 @@ struct LocalNotificationEditor: View {
         )
         switch mode {
         case .add:
-            userNotificationCenter.add(request)
+            try await userNotificationCenter.add(request)
         case .edit:
             userNotificationCenter.removePendingNotificationRequests(withIdentifiers: [request.identifier])
-            userNotificationCenter.add(request)
+            try await userNotificationCenter.add(request)
         }
         dismiss()
         onSave()
@@ -391,7 +391,7 @@ struct LocalNotificationEditor: View {
 
 #Preview {
     LocalNotificationEditor(
-        userNotificationCenter: .current(),
+        userNotificationCenter: UNUserNotificationCenter.current(),
         mode: .add
     ) {}
 }
