@@ -66,21 +66,21 @@ public struct LocalNotificationList: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    isAddNotificationEditorPresented = true
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
                     isDeleteAllAlertPresented = true
                 } label: {
                     Image(systemName: "trash")
                         .foregroundStyle(.red)
                 }
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isAddNotificationEditorPresented = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
         }
-        .alert("", isPresented: $isDeleteAllAlertPresented) {
+        .alert("Do you really want to delete all notifications?", isPresented: $isDeleteAllAlertPresented) {
             Button(role: .cancel) {
             } label: {
                 Text("Cancel")
@@ -93,8 +93,6 @@ public struct LocalNotificationList: View {
             } label: {
                 Text("Delete")
             }
-        } message: {
-            Text("Remove all notifications?")
         }
         .sheet(item: $selectedRequest) { box in
             LocalNotificationEditor(
