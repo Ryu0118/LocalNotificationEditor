@@ -7,9 +7,9 @@ public struct LocalNotificationList: View {
     @State var isAddNotificationEditorPresented = false
     @State var isDeleteAllAlertPresented = false
 
-    let userNotificationCenter: UNUserNotificationCenter
+    let userNotificationCenter: any UNUserNotificationCenterProtocol
 
-    public init(userNotificationCenter: UNUserNotificationCenter) {
+    public init(userNotificationCenter: some UNUserNotificationCenterProtocol) {
         self.userNotificationCenter = userNotificationCenter
     }
 
@@ -125,6 +125,6 @@ public struct LocalNotificationList: View {
     }
 
     private func update() async {
-        notificationRequests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+        notificationRequests = await userNotificationCenter.pendingNotificationRequests()
     }
 }
