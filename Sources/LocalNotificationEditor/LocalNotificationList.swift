@@ -5,6 +5,7 @@ public struct LocalNotificationList: View {
     @State var notificationRequests: [UNNotificationRequest] = []
     @State var selectedRequest: IdentifiableBox<UNNotificationRequest, String>?
     @State var isAddNotificationEditorPresented = false
+    @State var isDeleteAllAlertPresented = false
 
     let userNotificationCenter: UNUserNotificationCenter
 
@@ -65,10 +66,32 @@ public struct LocalNotificationList: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    isDeleteAllAlertPresented = true
+                } label: {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
                     isAddNotificationEditorPresented = true
                 } label: {
                     Image(systemName: "plus")
                 }
+            }
+        }
+        .alert("Do you really want to delete all notifications?", isPresented: $isDeleteAllAlertPresented) {
+            Button(role: .cancel) {
+            } label: {
+                Text("Cancel")
+            }
+            Button(role: .destructive) {
+                userNotificationCenter.removeAllPendingNotificationRequests()
+                Task {
+                    await update()
+                }
+            } label: {
+                Text("Delete")
             }
         }
         .sheet(item: $selectedRequest) { box in
